@@ -1,2 +1,3 @@
-# practice-dc-board
- Practice Board Project like dc-inside
+# 첫번째 나의 게시판
+
+역사적인 첫번째 개발입니다.
