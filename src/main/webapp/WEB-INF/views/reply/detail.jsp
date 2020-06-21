@@ -16,5 +16,10 @@
 	replyStatus : ${ reply.replyStatus }<br />
 	createdDateTime : ${ reply.createdDateTime }<br />
 	updatedDateTime : ${ reply.updatedDateTime }<br />
+	<br />
+	<form action="/reply/delete" method="post">
+		<input type="hidden" name="id" value="${ reply.id }" />
+		<button type="submit">삭제</button>
+	</form>
 </body>
 </html>

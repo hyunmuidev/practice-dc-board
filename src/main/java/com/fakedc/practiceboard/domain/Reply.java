@@ -11,29 +11,41 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import org.hibernate.annotations.DynamicInsert;
+import org.hibernate.annotations.DynamicUpdate;
+
 import com.fakedc.practiceboard.domain.enums.ReplyStatus;
 
 @Entity
 @Table(name = "reply")
+@DynamicInsert
+@DynamicUpdate
 public class Reply {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column
 	private long id;
+	
 	@Column
 	private long postId;
+	
 	@Column
 	private String createdBy;
+	
 	@Column
 	private String password;
+	
 	@Column
 	private String content;
+	
 	@Column
 	@Enumerated(EnumType.STRING)
 	private ReplyStatus replyStatus;
+	
 	@Column(name = "created_datetime")
 	private LocalDateTime createdDateTime;
+	
 	@Column(name = "updated_datetime")
 	private LocalDateTime updatedDateTime;
 
@@ -99,6 +111,12 @@ public class Reply {
 
 	public void setUpdatedDateTime(LocalDateTime updatedDateTime) {
 		this.updatedDateTime = updatedDateTime;
+	}
+
+	public void readyToSave(Reply updateReply) {
+		this.content = updateReply.content;
+		this.password = updateReply.password;
+		this.createdBy = updateReply.createdBy;
 	}
 
 }
