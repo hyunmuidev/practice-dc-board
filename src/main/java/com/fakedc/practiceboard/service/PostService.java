@@ -91,7 +91,13 @@ public class PostService {
 	 * @return 특정 게시판의 게시글
 	 */
 	public Collection<Post> getPosts(String boardId) {
-		return postRepository.findByBoardId(boardId);
+		// TODO: 상세 로직 검토 필요
+		/**
+		 * 게시판을 새로 만들고, 게시글이 한개도 없으면 접근자체를 못할 수 있음. 그러므로
+		 * 1. 게시판을 만들 때 더미 공지글 or 일반글을 하나 만든다
+		 * 2. 글이 한개도 없는 경우를 막기 위해 글이 1개만 남았을 때는 삭제가 되면 안된다.
+		 */
+		return postRepository.findByBoardId(boardId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 	}
 	
 }
