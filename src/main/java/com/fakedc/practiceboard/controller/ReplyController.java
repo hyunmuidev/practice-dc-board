@@ -10,18 +10,18 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.fakedc.practiceboard.domain.Reply;
-import com.fakedc.practiceboard.repository.ReplyRepository;
+import com.fakedc.practiceboard.service.ReplyService;
 
 @Controller
 @RequestMapping(value = "/reply")
 public class ReplyController {
 	
 	@Autowired
-	private ReplyRepository replyRepository;
+	private ReplyService replyService;
 	
 	@RequestMapping(value = "/{id}", method = RequestMethod.GET)
 	public ModelAndView detail(@PathVariable long id) {
-		Reply reply = replyRepository.findById(id).orElseThrow(IllegalArgumentException::new);		
+		Reply reply = replyService.getReply(id);		
 		return getModelAndView("reply/detail", reply);
 	}
 	
@@ -34,7 +34,7 @@ public class ReplyController {
 	
 	@RequestMapping(value = "/update/{id}", method = RequestMethod.GET)
 	public ModelAndView update(@PathVariable long id) {
-		Reply reply = replyRepository.findById(id).orElseThrow(IllegalArgumentException::new);
+		Reply reply = replyService.getReply(id);
 		return getModelAndView("reply/update", reply);
 	}
 	
@@ -46,25 +46,13 @@ public class ReplyController {
 	
 	@RequestMapping(value = "/update", method = RequestMethod.POST)
 	public String updateReply(Reply updateReply) {
-		Reply reply;
-		
-		// 댓글 추가 / 수정을 id 에 값이 있는지 없는지로 판단 
-		if (updateReply.getId() > 0) {
-			reply = replyRepository.findById(updateReply.getId()).orElseThrow(IllegalArgumentException::new);
-		} else {
-			reply = updateReply;
-		}
-		
-		reply.readyToSave(updateReply);
-		
-		replyRepository.save(reply);
+		Reply reply = updateReply.getId() > 0 ? replyService.updateReply(updateReply) : replyService.addReply(updateReply);
 		return "redirect:/reply/" + reply.getId();
 	}
 	
 	@RequestMapping(value = "/delete", method = RequestMethod.POST)
 	public String deleteReply(long id) {
-		replyRepository.deleteById(id);
-		return "redirect:/reply/" + id;		// 삭제 후 댓글 상세 페이지로 이동함. 
-											// 삭제가 되었으므로 에러가 발생한다
+		replyService.deleteReply(id);
+		return "redirect:/";
 	}
 }
