@@ -3,6 +3,7 @@
 <%@ page import="com.fakedc.practiceboard.utils.JspViewHelper"%>
 <%@ page
 	import="com.fakedc.practiceboard.domain.viewmodel.SearchBoardFilter"%>
+<%@ page import="com.fakedc.practiceboard.domain.enums.*" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="sp" uri="http://www.springframework.org/tags"%>
 <%@ taglib prefix="sp-form"
@@ -33,10 +34,10 @@
 		<div class="card">
 			<div class="card-header">
 				<ul class="nav nav-pills card-header-pills">
-					<li class="nav-item"><a class="nav-link active" href="#">전체글</a>
+					<li class="nav-item"><a class='nav-link ${ searchBoardFilter.postType.equals(PostType.ALL) ? "active" : "" }' href="/board/${ boardId }">전체글</a>
 					</li>
-					<li class="nav-item"><a class="nav-link" href="#">일반</a></li>
-					<li class="nav-item"><a class="nav-link" href="#">공지</a></li>
+					<li class="nav-item"><a class='nav-link ${ searchBoardFilter.postType.equals(PostType.NORMAL) ? "active" : "" }' href="/board/${ boardId }?postType=NORMAL">일반</a></li>
+					<li class="nav-item"><a class='nav-link ${ searchBoardFilter.postType.equals(PostType.NOTICE) ? "active" : "" }' href="/board/${ boardId }?postType=NOTICE">공지</a></li>
 				</ul>
 			</div>
 			<div class="card-body">
@@ -55,6 +56,7 @@
 									<button class="btn btn-primary" type="submit">검색</button>
 								</div>
 
+								<sp-form:hidden path="postType" />
 								<input type="hidden" name="currentPageIndex"
 									value="${ posts.number }" />
 								<input type="hidden" name="pagingSize" value="${ posts.size }" />
@@ -76,6 +78,7 @@
 							</select>
 
 							<input type="hidden" name="currentPage" value="1" />
+							<sp-form:hidden path="postType" />
 							<sp-form:hidden path="filterType" />
 							<sp-form:hidden path="keyword" />
 						</sp-form:form>
@@ -95,6 +98,18 @@
 							</tr>
 						</thead>
 						<tbody>
+							<c:forEach var="notice" items="${ notices }">
+								<tr>
+									<th scope="row">${ notice.id }</th>
+									<td>${ notice.postType.getName() }</td>
+									<td class="text-left"><a href="/post/${ notice.id }">
+											${ notice.title } </a></td>
+									<td>${ notice.createdBy }</td>
+									<td>${ JspViewHelper.parseLocalDateTime(notice.createdDateTime, "yyyy.MM.dd") }</td>
+									<td>${ notice.viewCount }</td>
+									<td>${ notice.recommendCount }</td>
+								</tr>
+							</c:forEach>
 							<c:choose>
 								<c:when test="${ posts.totalElements > 0 }">
 									<c:forEach var="post" items="${ posts.content }">
@@ -178,6 +193,7 @@
 								<button class="btn btn-primary" type="submit">검색</button>
 							</div>
 
+							<sp-form:hidden path="postType" />
 							<input type="hidden" name="currentPageIndex"
 								value="${ posts.number }" />
 							<input type="hidden" name="pagingSize" value="${ posts.size }" />

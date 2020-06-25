@@ -1,6 +1,7 @@
 package com.fakedc.practiceboard.domain.viewmodel;
 
 import com.fakedc.practiceboard.domain.enums.BoardFilterType;
+import com.fakedc.practiceboard.domain.enums.PostType;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -13,9 +14,12 @@ public class SearchBoardFilter {
 	
 	private String keyword;
 	
-	public SearchBoardFilter(BoardFilterType filterType, String keyword) {
+	private PostType postType;
+	
+	public SearchBoardFilter(BoardFilterType filterType, String keyword, PostType postType) {
 		this.filterType = filterType;
 		this.keyword = keyword;
+		this.postType = postType;
 	}
 
 	public BoardFilterType[] getAllBoardFilterTypes() {

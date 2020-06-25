@@ -1,6 +1,6 @@
 package com.fakedc.practiceboard.repository.mapper;
 
-import java.util.Collection;
+import java.util.List;
 
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Result;
@@ -8,14 +8,14 @@ import org.apache.ibatis.annotations.Results;
 import org.apache.ibatis.annotations.Select;
 
 import com.fakedc.practiceboard.domain.Post;
-import com.fakedc.practiceboard.domain.viewmodel.SearchBoardFilter;
+import com.fakedc.practiceboard.domain.params.PostFilterParams;
 
 @Mapper
 public interface PostMapper {
 
 	@Select({
 			"<script>",
-			"SELECT * FROM post WHERE board_id = #{ boardId } ",
+			"SELECT * FROM post WHERE board_id = #{ boardId } and post_type = #{ postType } ",
 			"<choose>",
 			"  <when test=\"filterType.toString() == 'TITLE' and keyword != null\">",
 			"    and title like CONCAT('%', #{ keyword }, '%')",
@@ -53,11 +53,11 @@ public interface PostMapper {
 		@Result(column = "created_datetime", property = "createdDateTime"),
 		@Result(column = "updated_datetime", property = "updatedDateTime")
 	})
-	Collection<Post> findByBoardFilter(SearchBoardFilter filter);
+	List<Post> findByPostFilter(PostFilterParams filter);
 
 	
 	@Select({"<script>",
-		"SELECT COUNT(*) FROM post WHERE board_id = #{ boardId }",
+		"SELECT COUNT(*) FROM post WHERE board_id = #{ boardId } and post_type = #{ postType } ",
 		"<choose>",
 		"  <when test=\"filterType.toString() == 'TITLE' and keyword != null\">",
 		"    and title like CONCAT('%', #{ keyword }, '%')",
@@ -80,6 +80,6 @@ public interface PostMapper {
 		"</choose>",
 		"</script>"
 	})
-	int getAllPostCount(SearchBoardFilter filter);
+	int getAllPostCount(PostFilterParams filter);
 	
 }

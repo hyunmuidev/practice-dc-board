@@ -1,5 +1,8 @@
 package com.fakedc.practiceboard.controller;
 
+import java.util.Collections;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -12,6 +15,7 @@ import org.springframework.web.servlet.ModelAndView;
 import com.fakedc.practiceboard.domain.GlobalVariables;
 import com.fakedc.practiceboard.domain.Post;
 import com.fakedc.practiceboard.domain.enums.BoardFilterType;
+import com.fakedc.practiceboard.domain.enums.PostType;
 import com.fakedc.practiceboard.domain.viewmodel.SearchBoardFilter;
 import com.fakedc.practiceboard.service.PostService;
 
@@ -19,11 +23,6 @@ import com.fakedc.practiceboard.service.PostService;
 @RequestMapping("/board")
 public class BoardController {
 	
-	public static final String DEFAULT_PAGE_SIZE = "30";
-	
-//	@Autowired
-//	private BoardService boardService;
-
 	@Autowired
 	private PostService postService;
 
@@ -31,13 +30,17 @@ public class BoardController {
 	public ModelAndView getPosts(@PathVariable String boardId,
 			@RequestParam(required = false, defaultValue = GlobalVariables.DEFAULT_BOARD_FILTER_TYPE) BoardFilterType filterType, 
 			@RequestParam(required = false, defaultValue = "") String keyword,
+			@RequestParam(required = false, defaultValue = GlobalVariables.DEFAULT_POST_TYPE) PostType postType,
 			Pageable page) {
 		
-		SearchBoardFilter filter = new SearchBoardFilter(filterType, keyword);
+		final int noticeLimit = 5;
+		SearchBoardFilter filter = new SearchBoardFilter(filterType, keyword, postType);
 		ModelAndView mv = new ModelAndView("board/posts");
-		Page<Post> posts = postService.getPosts(boardId, filterType, keyword, page);
+		List<Post> notices = !postType.equals(PostType.NORMAL) ? postService.getNotices(boardId, noticeLimit) : Collections.emptyList();
+		Page<Post> posts = !postType.equals(PostType.NOTICE) ? postService.getPosts(boardId, filterType, keyword, PostType.NORMAL, page) : Page.empty();
 		
 		mv.addObject("boardId", boardId);
+		mv.addObject("notices", notices);
 		mv.addObject("posts", posts);
 		mv.addObject("searchBoardFilter", filter);
 		return mv;

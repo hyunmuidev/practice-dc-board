@@ -1,7 +1,10 @@
 package com.fakedc.practiceboard.service;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -12,13 +15,19 @@ import org.springframework.web.server.ResponseStatusException;
 
 import com.fakedc.practiceboard.domain.Post;
 import com.fakedc.practiceboard.domain.enums.BoardFilterType;
+import com.fakedc.practiceboard.domain.enums.PostType;
+import com.fakedc.practiceboard.domain.params.PostFilterParams;
 import com.fakedc.practiceboard.repository.PostRepository;
+import com.fakedc.practiceboard.repository.mapper.PostMapper;
 
 @Service
 public class PostService {
 
 	@Autowired
 	private PostRepository postRepository;
+	
+	@Autowired
+	private PostMapper postMapper; 
 
 	/**
 	 * 게시글을 가져온다
@@ -101,7 +110,7 @@ public class PostService {
 	 * @param page 페이지 정보
 	 * @return
 	 */
-	public Page<Post> getPosts(String boardId, BoardFilterType filterType, String keyword, Pageable page) {
+	public Page<Post> getPosts(String boardId, BoardFilterType filterType, String keyword, PostType postType, Pageable page) {
 		
 		// 제목+내용 아니면 가장 간단한 방법, Query of Example 사용
 //		ExampleMatcher postExampleMatcher = ExampleMatcher.matching()
@@ -115,26 +124,12 @@ public class PostService {
 //		Example<Post> example = Example.of(Post.from(boardId, filterType, keyword), postExampleMatcher);
 //
 //		return postRepository.findAll(example, PageRequest.of(page.getPageNumber(), page.getPageSize(), Sort.by(Direction.DESC, "id")));
-		
-		Pageable pageable = PageRequest.of(page.getPageNumber(), page.getPageSize(), Sort.by(Direction.DESC, "id"));
-		
-		if (filterType.equals(BoardFilterType.TITLE)) {
-			return postRepository.findByBoardIdAndTitleContaining(boardId, keyword, pageable);
-		}
 
-		if (filterType.equals(BoardFilterType.CONTENT)) {
-			return postRepository.findByBoardIdAndContentContaining(boardId, keyword, pageable);
-		}
+		PostFilterParams filter = new PostFilterParams(boardId, filterType, keyword, postType, page.getPageNumber(), page.getPageSize());
+		int totalCount = postMapper.getAllPostCount(filter);
+		List<Post> posts = postMapper.findByPostFilter(filter);
 		
-		if (filterType.equals(BoardFilterType.TITLE_CONTENT)) {
-			return postRepository.findByBoardIdAndTitleContainingOrContentContaining(boardId, keyword, keyword, pageable);
-		}
-
-		if (filterType.equals(BoardFilterType.WRITER)) {
-			return postRepository.findByBoardIdAndCreatedBy(boardId, keyword, pageable);
-		}
-		
-		return postRepository.findByBoardIdAndTitleContainingOrContentContainingOrCreatedBy(boardId, keyword, keyword, keyword, pageable);
+		return new PageImpl<>(posts, page, totalCount);
 	}
 
 	/**
@@ -146,5 +141,16 @@ public class PostService {
 		Post post = getPost(id);
 		post.setViewCount(post.getViewCount() + 1);
 		postRepository.save(post);
+	}
+
+	/**
+	 * 공지 게시글만 가져온다
+	 * 
+	 * @param boardId
+	 * @param noticeLimit
+	 * @return
+	 */
+	public List<Post> getNotices(String boardId, int noticeLimit) {
+		return postRepository.findByBoardIdAndPostType(boardId, PostType.NOTICE, PageRequest.of(0, noticeLimit, Sort.by(Direction.DESC, "id"))).getContent();
 	}
 }

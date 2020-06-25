@@ -1,6 +1,7 @@
 package com.fakedc.practiceboard.domain.enums;
 
 public enum PostType {
+	ALL("전체글"),
 	NORMAL("일반"),
 	NOTICE("공지");
 	
