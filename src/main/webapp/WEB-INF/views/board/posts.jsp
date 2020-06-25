@@ -42,7 +42,7 @@
 			<div class="card-body">
 				<div class="search-filter row mb-3">
 					<div class="offset-3 col-6">
-						<c:if test="${ searchBoardFilter.pageSize > 10 }">
+						<c:if test="${ posts.size > 10 }">
 							<sp-form:form cssClass="input-group" action="/board/${ boardId }"
 								method="get" modelAttribute="searchBoardFilter">
 								<sp-form:select path="filterType"
@@ -55,8 +55,9 @@
 									<button class="btn btn-primary" type="submit">검색</button>
 								</div>
 
-								<sp-form:hidden path="pageSize" />
-								<sp-form:hidden path="pageIndex" />
+								<input type="hidden" name="currentPageIndex"
+									value="${ posts.number }" />
+								<input type="hidden" name="pagingSize" value="${ posts.size }" />
 							</sp-form:form>
 						</c:if>
 					</div>
@@ -64,12 +65,17 @@
 						<sp-form:form cssClass="btn-group" action="/board/${ boardId }"
 							method="get" modelAttribute="searchBoardFilter"
 							name="form_page_size">
-							<sp-form:select path="pageSize"
-								cssClass="input-group-prepend custom-select"
-								items="${ SearchBoardFilter.TYPEOF_PAGE_SIZE }"
+							<select name="pagingSize"
+								class="input-group-prepend custom-select"
 								onchange="form_page_size.submit()">
-							</sp-form:select>
+								<c:forEach var="value"
+									items="${ SearchBoardFilter.TYPEOF_PAGE_SIZE }">
+									<option value="${ value }"
+										${ posts.size == value ? "selected" : "" }>${ value }</option>
+								</c:forEach>
+							</select>
 
+							<input type="hidden" name="currentPage" value="1" />
 							<sp-form:hidden path="filterType" />
 							<sp-form:hidden path="keyword" />
 						</sp-form:form>
@@ -89,18 +95,27 @@
 							</tr>
 						</thead>
 						<tbody>
-							<c:forEach var="post" items="${ posts }">
-								<tr>
-									<th scope="row">${ post.id }</th>
-									<td>${ post.postType.getName() }</td>
-									<td class="text-left"><a href="/post/${ post.id }"> ${ post.title }
-									</a></td>
-									<td>${ post.createdBy }</td>
-									<td>${ JspViewHelper.parseLocalDateTime(post.createdDateTime, "yyyy.MM.dd") }</td>
-									<td>${ post.viewCount }</td>
-									<td>${ post.recommendCount }</td>
-								</tr>
-							</c:forEach>
+							<c:choose>
+								<c:when test="${ posts.totalElements > 0 }">
+									<c:forEach var="post" items="${ posts.content }">
+										<tr>
+											<th scope="row">${ post.id }</th>
+											<td>${ post.postType.getName() }</td>
+											<td class="text-left"><a href="/post/${ post.id }">
+													${ post.title } </a></td>
+											<td>${ post.createdBy }</td>
+											<td>${ JspViewHelper.parseLocalDateTime(post.createdDateTime, "yyyy.MM.dd") }</td>
+											<td>${ post.viewCount }</td>
+											<td>${ post.recommendCount }</td>
+										</tr>
+									</c:forEach>
+								</c:when>
+								<c:otherwise>
+									<tr>
+										<th colspan="7">No Data</th>
+									</tr>
+								</c:otherwise>
+							</c:choose>
 						</tbody>
 					</table>
 					<div class="row">
@@ -108,40 +123,34 @@
 							<nav aria-label="...">
 								<ul class="pagination">
 									<c:choose>
-										<c:when test="${ searchBoardFilter.pageIndex == 1 }">
+										<c:when test="${ !posts.hasPrevious() }">
 											<li class="page-item disabled"><a class="page-link"
 												href="#" aria-disabled="true">이전</a></li>
 										</c:when>
 										<c:otherwise>
 											<li class="page-item"><a class="page-link"
-												href="/board/${ searchBoardFilter.getUrlParams(searchBoardFilter.pageIndex - 1) }"
+												href="/board/${ boardId }?${ JspViewHelper.getUrlPageableParams(posts.previousPageable()) }&${ searchBoardFilter.urlParams }"
 												aria-disabled="true">이전</a></li>
 										</c:otherwise>
 									</c:choose>
-									<c:forEach begin="0" end="${ searchBoardFilter.lastIndex }"
-										varStatus="status">
-										<c:choose>
-											<c:when
-												test="${ searchBoardFilter.pageIndex == status.index + 1 }">
-												<li class="page-item active">
-											</c:when>
-											<c:otherwise>
-												<li class="page-item">
-											</c:otherwise>
-										</c:choose>
-										<a class="page-link"
-											href="/board/${ searchBoardFilter.getUrlParams(status.index + 1) }">${ status.index + 1 }</a>
-										</li>
-									</c:forEach>
+									<c:if test="${ posts.totalPages > 0 }">
+										<c:forEach begin="0" end="${ posts.totalPages - 1 }"
+											varStatus="status">
+											<li
+												class='page-item ${ posts.number == status.current ? "active" : "" }'><a
+												class="page-link"
+												href="/board/${ boardId }?${ JspViewHelper.getUrlPageableParams(status.current + 1, posts.size) }&${ searchBoardFilter.urlParams }">${ status.current + 1 }</a>
+											</li>
+										</c:forEach>
+									</c:if>
 									<c:choose>
-										<c:when
-											test="${ searchBoardFilter.lastIndex + 1 == searchBoardFilter.pageIndex }">
+										<c:when test="${ !posts.hasNext() }">
 											<li class="page-item disabled"><a class="page-link"
 												href="#" aria-disabled="true">다음</a></li>
 										</c:when>
 										<c:otherwise>
 											<li class="page-item"><a class="page-link"
-												href="/board/${ searchBoardFilter.getUrlParams(searchBoardFilter.pageIndex + 1) }"
+												href="/board/${ boardId }?${ JspViewHelper.getUrlPageableParams(posts.nextPageable()) }&${ searchBoardFilter.urlParams }"
 												aria-disabled="true">다음</a></li>
 										</c:otherwise>
 									</c:choose>
@@ -169,8 +178,9 @@
 								<button class="btn btn-primary" type="submit">검색</button>
 							</div>
 
-							<sp-form:hidden path="pageSize" />
-							<sp-form:hidden path="pageIndex" />
+							<input type="hidden" name="currentPageIndex"
+								value="${ posts.number }" />
+							<input type="hidden" name="pagingSize" value="${ posts.size }" />
 						</sp-form:form>
 					</div>
 				</div>

@@ -9,44 +9,21 @@ import lombok.Setter;
 @Setter
 public class SearchBoardFilter {
 	
-	private String boardId;
-	
 	private BoardFilterType filterType;
 	
 	private String keyword;
 	
-	private int pageIndex;
-	
-	private int pageSize;
-	
-	private int allCount;
-	
-	public SearchBoardFilter(String boardId, BoardFilterType filterType, String keyword, int pageIndex, int pageSize) {
-		this.boardId = boardId;
+	public SearchBoardFilter(BoardFilterType filterType, String keyword) {
 		this.filterType = filterType;
 		this.keyword = keyword;
-		this.pageIndex = pageIndex;
-		this.pageSize = pageSize;
 	}
 
 	public BoardFilterType[] getAllBoardFilterTypes() {
 		return BoardFilterType.values();
 	}
 	
-	public int getOffset() {
-		return (this.pageIndex - 1) * this.pageSize;
-	}
-	
-	public int getLastIndex() {
-		return allCount / this.pageSize;
-	}
-	
 	public String getUrlParams() {
-		return getUrlParams(this.pageIndex);
-	}
-	
-	public String getUrlParams(int pageIndex) {
-		return String.format("%s?filterType=%s&keyword=%s&pageIndex=%d&pageSize=%d", boardId, filterType.toString(), keyword, pageIndex, this.pageSize);
+		return "filterType=" + filterType.toString() + "&keyword=" + keyword;
 	}
 	
 	public static int[] TYPEOF_PAGE_SIZE = {3, 10, 30, 50};

@@ -13,7 +13,8 @@ import com.fakedc.practiceboard.domain.viewmodel.SearchBoardFilter;
 @Mapper
 public interface PostMapper {
 
-	@Select({"<script>",
+	@Select({
+			"<script>",
 			"SELECT * FROM post WHERE board_id = #{ boardId } ",
 			"<choose>",
 			"  <when test=\"filterType.toString() == 'TITLE' and keyword != null\">",

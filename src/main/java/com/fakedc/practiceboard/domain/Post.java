@@ -14,6 +14,7 @@ import javax.persistence.Table;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 
+import com.fakedc.practiceboard.domain.enums.BoardFilterType;
 import com.fakedc.practiceboard.domain.enums.PostType;
 
 import lombok.Getter;
@@ -28,18 +29,18 @@ import lombok.ToString;
 @Setter
 @ToString
 public class Post {
-	
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column
 	private long id;
-	
+
 	@Column
 	private String boardId;
-	
+
 	@Column
 	private String title;
-	
+
 	@Column
 	private String content;
 
@@ -55,7 +56,7 @@ public class Post {
 
 	@Column
 	private int viewCount;
-	
+
 	@Column
 	private int recommendCount;
 
@@ -75,5 +76,26 @@ public class Post {
 		this.updatedDateTime = LocalDateTime.now();
 		this.postType = updatePost.postType;
 	}
-	
+
+	public static Post from(String boardId, BoardFilterType filterType, String keyword) {
+		Post post = new Post();
+		post.boardId = boardId;
+
+		if (filterType.equals(BoardFilterType.TITLE) || filterType.equals(BoardFilterType.TITLE_CONTENT)
+				|| filterType.equals(BoardFilterType.ALL)) {
+			post.title = keyword;
+		}
+
+		if (filterType.equals(BoardFilterType.CONTENT) || filterType.equals(BoardFilterType.TITLE_CONTENT)
+				|| filterType.equals(BoardFilterType.ALL)) {
+			post.content = keyword;
+		}
+
+		if (filterType.equals(BoardFilterType.WRITER) || filterType.equals(BoardFilterType.ALL)) {
+			post.createdBy = keyword;
+		}
+
+		return post;
+	}
+
 }

@@ -1,8 +1,8 @@
 package com.fakedc.practiceboard.controller;
 
-import java.util.Collection;
-
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -32,15 +32,12 @@ public class BoardController {
 	public ModelAndView getPosts(@PathVariable String boardId,
 			@RequestParam(required = false, defaultValue = GlobalVariables.DEFAULT_BOARD_FILTER_TYPE) BoardFilterType filterType, 
 			@RequestParam(required = false, defaultValue = "") String keyword,
-			@RequestParam(required = false, defaultValue = GlobalVariables.DEFAULT_PAGE_INDEX) int pageIndex,
-			@RequestParam(required = false, defaultValue = GlobalVariables.DEFAULT_PAGE_SIZE) int pageSize) {
+			Pageable page) {
 		
-		SearchBoardFilter filter = new SearchBoardFilter(boardId, filterType, keyword, pageIndex, pageSize);
+		SearchBoardFilter filter = new SearchBoardFilter(filterType, keyword);
 		ModelAndView mv = new ModelAndView("board/posts");
-		int allPostCount = postService.getAllPostCount(filter);
-		Collection<Post> posts = postService.getPosts(filter);
+		Page<Post> posts = postService.getPosts(boardId, filterType, keyword, page);
 		
-		filter.setAllCount(allPostCount);
 		mv.addObject("boardId", boardId);
 		mv.addObject("posts", posts);
 		mv.addObject("searchBoardFilter", filter);
