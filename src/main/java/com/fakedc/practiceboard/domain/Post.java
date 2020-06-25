@@ -54,6 +54,9 @@ public class Post {
 	private PostType postType;
 
 	@Column
+	private int viewCount;
+	
+	@Column
 	private int recommendCount;
 
 	@Column

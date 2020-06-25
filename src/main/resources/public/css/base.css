@@ -26,8 +26,16 @@ header {
   margin-right: 0;
 }
 
-.reply-area button {
+.reply-area .reply-command > button {
   margin-left: 0.5em;
   width: 40px;
   height: 40px;
+}
+
+.reply-add textarea {
+  height: 100% !important;
+}
+
+.reply-add input+input {
+  margin-top: 0.5rem;
 }
