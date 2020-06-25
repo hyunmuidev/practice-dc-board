@@ -13,7 +13,6 @@ import com.fakedc.practiceboard.domain.GlobalVariables;
 import com.fakedc.practiceboard.domain.Post;
 import com.fakedc.practiceboard.domain.enums.BoardFilterType;
 import com.fakedc.practiceboard.domain.viewmodel.SearchBoardFilter;
-import com.fakedc.practiceboard.service.BoardService;
 import com.fakedc.practiceboard.service.PostService;
 
 @Controller
@@ -22,8 +21,8 @@ public class BoardController {
 	
 	public static final String DEFAULT_PAGE_SIZE = "30";
 	
-	@Autowired
-	private BoardService boardService;
+//	@Autowired
+//	private BoardService boardService;
 
 	@Autowired
 	private PostService postService;

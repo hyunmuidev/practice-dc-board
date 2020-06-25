@@ -1,13 +1,10 @@
 package com.fakedc.practiceboard.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Example;
-import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.data.domain.ExampleMatcher.MatcherConfigurer;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -16,7 +13,6 @@ import org.springframework.web.server.ResponseStatusException;
 import com.fakedc.practiceboard.domain.Post;
 import com.fakedc.practiceboard.domain.enums.BoardFilterType;
 import com.fakedc.practiceboard.repository.PostRepository;
-import com.fakedc.practiceboard.repository.mapper.PostMapper;
 
 @Service
 public class PostService {
