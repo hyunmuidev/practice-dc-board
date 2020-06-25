@@ -73,15 +73,19 @@
 				</div>
 			</div>
 		</div>
-		<div class="post-command d-flex justify-content-end">
-			<a href="/post/update/${ post.id }">
-				<button class="btn btn-lg btn-success ml-3">수정</button>
-			</a>
-			<sp-form:form action="/post/delete" method="post"
-				modelAttribute="post">
-				<button type="submit" class="btn btn-lg btn-danger ml-3">삭제</button>
-				<sp-form:hidden path="id" />
-			</sp-form:form>
+		<div class="post-command row mb-3">
+			<div class="col-6">
+				<a href="/board/${ post.boardId }" class="btn btn-lg btn-primary">목록</a>
+			</div>
+			<div class="col-6 d-flex justify-content-end">
+				<a class="btn btn-lg btn-success ml-3"
+					href="/post/update/${ post.id }">수정</a>
+				<sp-form:form action="/post/delete" method="post"
+					modelAttribute="post">
+					<button type="submit" class="btn btn-lg btn-danger ml-3">삭제</button>
+					<sp-form:hidden path="id" />
+				</sp-form:form>
+			</div>
 		</div>
 		<div class="reply-area">
 			<h6 id="replies">전체 리플 ${ replies.size() }개</h6>
@@ -105,25 +109,26 @@
 					</li>
 				</c:forEach>
 			</ul>
-			<sp-form:form action="/reply/add" modelAttribute="addReply"
-				cssClass="reply-add row mb-3" name="reply_add_form">
+			<form action="/reply/add" class="reply-add row mb-3" method="post"
+				name="reply_add_form">
 				<div class="col-3">
-					<sp-form:input path="createdBy"
-						cssClass="form-control form-control-lg" placeholder="작성자" />
-					<sp-form:input path="password"
-						cssClass="form-control form-control-lg" placeholder="비밀번호" />
+					<input type="text" class="form-control form-control-lg"
+						name="createdBy" placeholder="작성자" /> <input type="password"
+						class="form-control form-control-lg" name="password"
+						placeholder="비밀번호" />
 				</div>
 				<div class="col-7">
-					<sp-form:textarea path="content" cssClass="form-control" rows="3"
-						placeholder="댓글을 입력하세요" />
+					<textarea class="form-control form-control-lg" name="content"
+						rows="3" placeholder="댓글을 입력하세요"></textarea>
 				</div>
 				<div class="col-2">
 					<button type="submit" class="btn btn-lg btn-block btn-primary">등록</button>
 					<button type="button" class="btn btn-lg btn-block btn-success"
 						onclick="recommendAndAddReply()">등록+추천</button>
 				</div>
-				<sp-form:hidden path="postId" />
-			</sp-form:form>
+
+				<input type="hidden" name="postId" value="${ post.id }" />
+			</form>
 			<script>
 				function recommendAndAddReply() {
 					reply_add_form.action = '/reply/add?withRecommend=true'

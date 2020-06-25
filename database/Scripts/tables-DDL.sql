@@ -17,6 +17,7 @@ CREATE TABLE `post` (
   `content` varchar(1024) NOT NULL,
   `password` varchar(12) DEFAULT NULL,
   `post_type` enum('NORMAL','NOTICE') NOT NULL DEFAULT 'NORMAL',
+  `view_count` int NOT NULL DEFAULT '0',
   `recommend_count` int NOT NULL DEFAULT '0',
   `unrecommend_count` int NOT NULL DEFAULT '0',
   `created_by` varchar(16) NOT NULL,
@@ -25,7 +26,7 @@ CREATE TABLE `post` (
   PRIMARY KEY (`id`),
   KEY `post_fk` (`board_id`),
   CONSTRAINT `post_fk` FOREIGN KEY (`board_id`) REFERENCES `board` (`id`) ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
 
 -- fake_dc.reply definition
 

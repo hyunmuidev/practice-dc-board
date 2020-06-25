@@ -32,14 +32,7 @@ public class PostController {
 		
 		Post post = postService.getPost(id);
 		Collection<Reply> replies = replyService.getReplies(id);
-		ModelAndView mv = getModelAndView("post/detail", post, replies);
-
-		// 새로 등록될 Reply 정보
-		Reply reply = new Reply();
-		reply.setPostId(post.getId());
-		mv.addObject("addReply", reply);
-		
-		return mv;
+		return getModelAndView("post/detail", post, replies);
 	}
 
 	@RequestMapping(value = "/add", method = RequestMethod.GET)
