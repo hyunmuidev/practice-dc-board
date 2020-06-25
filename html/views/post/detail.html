@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>KT ROLSTER Gallery - 게시글 쓰기</title>
+  <title>KT ROLSTER Gallery - 게시글 읽기</title>
 
   <link href="../../css/base.css" rel="stylesheet" />
   <link href="../../lib/bootstrap/css/bootstrap.min.css" rel="stylesheet" />
@@ -77,7 +77,7 @@
             여러줄짜리도 써보는중
           </div>
           <div class="col-2">2020.06.01 01:10:00</div>
-          <div class="col-2 d-flex justify-content-end align-content-center">
+          <div class="reply-command col-2 d-flex justify-content-end align-content-center">
             <button class="btn btn-primary">
               <i class="fa fa-edit" aria-hidden="true"></i>
             </button>
@@ -90,13 +90,29 @@
           <div class="col-2">ㅇㅇ</div>
           <div class="col-6">대충 아무렇게나 날리는 선플1</div>
           <div class="col-2">2020.06.01 01:10:00</div>
-          <div class="col-2 d-flex justify-content-end align-content-center">
+          <div class="reply-command col-2 d-flex justify-content-end align-content-center">
+            <button class="btn btn-primary">
+              <i class="fa fa-edit" aria-hidden="true"></i>
+            </button>
             <button class="btn btn-secondary">
               <i class="fa fa-trash" aria-hidden="true"></i>
             </button>
           </div>
         </li>
       </ul>
+      <form class="reply-add row">
+        <div class="col-3">
+          <input class="form-control form-control-lg" placeholder="작성자" />
+          <input class="form-control form-control-lg" placeholder="비밀번호" />
+        </div>
+        <div class="col-7">
+          <textarea class="form-control" rows="3" placeholder="댓글을 입력하세요"></textarea>
+        </div>
+        <div class="col-2">
+          <button class="btn btn-lg btn-block btn-primary">등록</button>
+          <button class="btn btn-lg btn-block btn-success">등록+추천</button>
+        </div>
+      </form>
     </div>
   </main>
   <footer>
