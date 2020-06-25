@@ -1,5 +1,7 @@
 package com.fakedc.practiceboard.controller;
 
+import java.util.Collection;
+
 import javax.validation.constraints.NotNull;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,7 +12,9 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.fakedc.practiceboard.domain.Post;
+import com.fakedc.practiceboard.domain.Reply;
 import com.fakedc.practiceboard.service.PostService;
+import com.fakedc.practiceboard.service.ReplyService;
 
 @Controller
 @RequestMapping(value = "/post")
@@ -19,10 +23,23 @@ public class PostController {
 	@Autowired
 	private PostService postService;
 
+	@Autowired
+	private ReplyService replyService;
+
 	@RequestMapping(value = "/{id}", method = RequestMethod.GET)
 	public ModelAndView detail(@PathVariable long id) {
+		postService.raiseViewCount(id);
+		
 		Post post = postService.getPost(id);
-		return getModelAndView("post/detail", post);
+		Collection<Reply> replies = replyService.getReplies(id);
+		ModelAndView mv = getModelAndView("post/detail", post, replies);
+
+		// 새로 등록될 Reply 정보
+		Reply reply = new Reply();
+		reply.setPostId(post.getId());
+		mv.addObject("addReply", reply);
+		
+		return mv;
 	}
 
 	@RequestMapping(value = "/add", method = RequestMethod.GET)
@@ -38,9 +55,16 @@ public class PostController {
 		return getModelAndView("post/update", post);
 	}
 
-	private ModelAndView getModelAndView(@NotNull String viewName, Post post) {
+	private ModelAndView getModelAndView(@NotNull String viewName, @NotNull Post post) {
+		return getModelAndView(viewName, post, null);
+	}
+
+	private ModelAndView getModelAndView(@NotNull String viewName, @NotNull Post post, Collection<Reply> replies) {
 		ModelAndView mv = new ModelAndView(viewName);
 		mv.addObject("post", post);
+		if (replies != null) {
+			mv.addObject("replies", replies);
+		}
 		return mv;
 	}
 
@@ -54,6 +78,18 @@ public class PostController {
 	@RequestMapping(value = "/delete", method = RequestMethod.POST)
 	public String deletePost(long id) {
 		postService.deletePost(id);
-		return "redirect:/";	// go to home
+		return "redirect:/"; // go to home
+	}
+	
+	@RequestMapping(value = "/recommend", method = RequestMethod.POST)
+	public String recommend(long id) {
+		postService.recommendPost(id);
+		return "redirect:/post/" + id;
+	}
+	
+	@RequestMapping(value = "/unrecommend", method = RequestMethod.POST)
+	public String unrecommend(long id) {
+		postService.unrecommendPost(id);
+		return "redirect:/post/" + id;
 	}
 }

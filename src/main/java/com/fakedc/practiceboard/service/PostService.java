@@ -69,8 +69,10 @@ public class PostService {
 	 * @return		업데이트된 추천 갯수
 	 */
 	public int recommendPost(long id) {
-		// TODO: 추천 미구현
-		return 0;
+		Post post = getPost(id);
+		post.setRecommendCount(post.getRecommendCount() + 1);
+		postRepository.save(post);
+		return post.getRecommendCount();
 	}
 	
 	/**
@@ -80,8 +82,10 @@ public class PostService {
 	 * @return		업데이트된 비추천 갯수
 	 */
 	public int unrecommendPost(long id) {
-		// TODO: 비추천 미구현
-		return 0;
+		Post post = getPost(id);
+		post.setUnrecommendCount(post.getUnrecommendCount() + 1);
+		postRepository.save(post);
+		return post.getUnrecommendCount();
 	}
 
 	/**
@@ -100,4 +104,14 @@ public class PostService {
 		return postRepository.findByBoardId(boardId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 	}
 	
+	/**
+	 * 게시글의 조회수를 증가시킨다
+	 * 
+	 * @param id 게시글 아이디
+	 */
+	public void raiseViewCount(long id) {
+		Post post = getPost(id);
+		post.setViewCount(post.getViewCount() + 1);
+		postRepository.save(post);
+	}
 }

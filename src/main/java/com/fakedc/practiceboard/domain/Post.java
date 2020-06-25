@@ -73,6 +73,7 @@ public class Post {
 		this.title = updatePost.title;
 		this.password = updatePost.password;
 		this.updatedDateTime = LocalDateTime.now();
+		this.postType = updatePost.postType;
 	}
 	
 }

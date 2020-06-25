@@ -9,12 +9,12 @@ var buttonSuffixArray = ['primary', 'secondary', 'success', 'danger', 'warning',
 
 function redrawOutlineButtons() {
   $('.form-group .btn-group-toggle label.btn').each(function () {
-    console.log('test');
     var buttonClassName = getButtonClass($(this));
     var tmp = buttonClassName.split('-');
     var buttonSuffixName = tmp[tmp.length - 1];
+    var isChecked = $(this).children('input[type=radio]:checked').length > 0;
 
-    $(this).removeClass(buttonClassName).addClass(($(this).hasClass('active') ? 'btn-' : 'btn-outline-') +
+    $(this).removeClass(buttonClassName).addClass((isChecked ? 'btn-' : 'btn-outline-') +
       buttonSuffixName);
   })
 }

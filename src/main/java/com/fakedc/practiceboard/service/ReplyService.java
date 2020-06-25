@@ -1,9 +1,12 @@
 package com.fakedc.practiceboard.service;
 
 import java.util.Collection;
+import java.util.Collections;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import com.fakedc.practiceboard.domain.Reply;
 import com.fakedc.practiceboard.repository.ReplyRepository;
@@ -21,7 +24,7 @@ public class ReplyService {
 	 * @return 댓글
 	 */
 	public Reply getReply(long id) {
-		return replyRepository.findById(id).orElseThrow(IllegalArgumentException::new);
+		return replyRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 	}
 	
 	/**
@@ -31,8 +34,7 @@ public class ReplyService {
 	 * @return 댓글 리스트
 	 */
 	public Collection<Reply> getReplies(long postId) {
-		// TODO: 댓글 리스트 가져오기 미구현
-		return null;
+		return replyRepository.findByPostId(postId).orElseGet(Collections::emptyList);
 	}
 	
 	/**
