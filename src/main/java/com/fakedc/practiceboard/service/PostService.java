@@ -8,13 +8,18 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.fakedc.practiceboard.domain.Post;
+import com.fakedc.practiceboard.domain.viewmodel.SearchBoardFilter;
 import com.fakedc.practiceboard.repository.PostRepository;
+import com.fakedc.practiceboard.repository.mapper.PostMapper;
 
 @Service
 public class PostService {
 
 	@Autowired
 	private PostRepository postRepository;
+	
+	@Autowired
+	private PostMapper postMapper;
 	
 	/**
 	 * 게시글을 가져온다
@@ -87,21 +92,31 @@ public class PostService {
 		postRepository.save(post);
 		return post.getUnrecommendCount();
 	}
+	
+	/**
+	 * 특정 게시판의 게시글 갯수를 구한다
+	 * 
+	 * @param filter 게시판 검색 조건 
+	 * @return
+	 */
+	public int getAllPostCount(SearchBoardFilter filter) {
+		return postMapper.getAllPostCount(filter);
+	}
 
 	/**
 	 * 특정 게시판의 게시글들을 가져온다
 	 * 
-	 * @param boardId 게시판 아이디
+	 * @param filter 게시판 검색 조건
 	 * @return 특정 게시판의 게시글
 	 */
-	public Collection<Post> getPosts(String boardId) {
+	public Collection<Post> getPosts(SearchBoardFilter filter) {
 		// TODO: 상세 로직 검토 필요
 		/**
 		 * 게시판을 새로 만들고, 게시글이 한개도 없으면 접근자체를 못할 수 있음. 그러므로
 		 * 1. 게시판을 만들 때 더미 공지글 or 일반글을 하나 만든다
 		 * 2. 글이 한개도 없는 경우를 막기 위해 글이 1개만 남았을 때는 삭제가 되면 안된다.
 		 */
-		return postRepository.findByBoardId(boardId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+		return postMapper.findByBoardFilter(filter);
 	}
 	
 	/**
