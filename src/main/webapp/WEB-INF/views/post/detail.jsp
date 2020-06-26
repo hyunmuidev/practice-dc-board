@@ -46,7 +46,7 @@
 				</div>
 			</div>
 			<div class="card-body">
-				<div class="post-content">${ post.content }</div>
+				<div class="post-content">${ post.content.replaceAll("\\n", "<br />") }</div>
 				<div id="recommend"
 					class="post-recommend d-flex justify-content-center">
 					<sp-form:form action="/post/recommend" method="post"

@@ -14,9 +14,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.fakedc.practiceboard.domain.Post;
+import com.fakedc.practiceboard.domain.PostHistory;
+import com.fakedc.practiceboard.domain.PostHistoryId;
 import com.fakedc.practiceboard.domain.enums.BoardFilterType;
+import com.fakedc.practiceboard.domain.enums.PostActionType;
 import com.fakedc.practiceboard.domain.enums.PostType;
 import com.fakedc.practiceboard.domain.params.PostFilterParams;
+import com.fakedc.practiceboard.repository.PostHistoryRepository;
 import com.fakedc.practiceboard.repository.PostRepository;
 import com.fakedc.practiceboard.repository.mapper.PostMapper;
 
@@ -28,6 +32,9 @@ public class PostService {
 	
 	@Autowired
 	private PostMapper postMapper; 
+	
+	@Autowired
+	private PostHistoryRepository postHistoryRepository;
 
 	/**
 	 * 게시글을 가져온다
@@ -79,12 +86,20 @@ public class PostService {
 	 * 게시글을 추천한다
 	 * 
 	 * @param id 게시글 아이디
-	 * @return 업데이트된 추천 갯수
+	 * @param jSessionId 세션 아이디
+	 * @return 업데이트된 추천 갯수 / 이미 추천한경우 -1
 	 */
-	public int recommendPost(long id) {
+	public int recommendPost(long id, String jSessionId) {
+		if (!checkPostHistory(jSessionId, id, PostActionType.RECOMMEND)) {
+			return -1; 
+		}
+		
 		Post post = getPost(id);
 		post.setRecommendCount(post.getRecommendCount() + 1);
 		postRepository.save(post);
+		
+		savePostHistory(jSessionId, id, PostActionType.RECOMMEND);
+		
 		return post.getRecommendCount();
 	}
 
@@ -92,12 +107,20 @@ public class PostService {
 	 * 게시글을 비추천한다
 	 * 
 	 * @param id 게시글 아이디
-	 * @return 업데이트된 비추천 갯수
+	 * @param jSessionId 세션 아이디
+	 * @return 업데이트된 비추천 갯수 / 이미 추천한경우 -1
 	 */
-	public int unrecommendPost(long id) {
+	public int unrecommendPost(long id, String jSessionId) {
+		if (!checkPostHistory(jSessionId, id, PostActionType.RECOMMEND)) {
+			return -1; 
+		}
+		
 		Post post = getPost(id);
 		post.setUnrecommendCount(post.getUnrecommendCount() + 1);
 		postRepository.save(post);
+		
+		savePostHistory(jSessionId, id, PostActionType.RECOMMEND);
+		
 		return post.getUnrecommendCount();
 	}
 
@@ -133,14 +156,23 @@ public class PostService {
 	}
 
 	/**
-	 * 게시글의 조회수를 증가시킨다
+	 * 게시글의 조회수를 증가시킨다.
+	 * 이미 조회수가 증가되었으면 증가시키지 않는다.
 	 * 
 	 * @param id 게시글 아이디
+	 * @param jSessionId 세션 아이디
 	 */
-	public void raiseViewCount(long id) {
+	public void raiseViewCount(long id, String jSessionId) {
+		
+		if (!checkPostHistory(jSessionId, id, PostActionType.READ)) {
+			return;
+		}
+		
 		Post post = getPost(id);
 		post.setViewCount(post.getViewCount() + 1);
 		postRepository.save(post);
+		
+		savePostHistory(jSessionId, id, PostActionType.READ);
 	}
 
 	/**
@@ -152,5 +184,30 @@ public class PostService {
 	 */
 	public List<Post> getNotices(String boardId, int noticeLimit) {
 		return postRepository.findByBoardIdAndPostType(boardId, PostType.NOTICE, PageRequest.of(0, noticeLimit, Sort.by(Direction.DESC, "id"))).getContent();
+	}
+	
+	/**
+	 * 수행하려는 액션이 이미 수행된 액션인지 확인
+	 * 
+	 * @param jSessionId
+	 * @param postId
+	 * @param postAction
+	 * @return
+	 */
+	public boolean checkPostHistory(String jSessionId, long postId, PostActionType postAction) {
+		PostHistory history = postHistoryRepository.findById(new PostHistoryId(jSessionId, postId, postAction)).orElseGet(() -> null);
+		return history == null;
+	}
+	
+	/**
+	 * 게시글 액션을 저장한다
+	 * 
+	 * @param jSessionId
+	 * @param postId
+	 * @param postAction
+	 */
+	public void savePostHistory(String jSessionId, long postId, PostActionType postAction) {
+		PostHistory history = new PostHistory(jSessionId, postId, postAction);
+		postHistoryRepository.save(history);
 	}
 }

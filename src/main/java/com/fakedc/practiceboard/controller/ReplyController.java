@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.fakedc.practiceboard.domain.Reply;
@@ -68,7 +69,7 @@ public class ReplyController {
 		Reply addedReply = replyService.addReply(addReply);
 
 		if (withRecommend) {
-			postService.recommendPost(addedReply.getPostId());
+			postService.recommendPost(addedReply.getPostId(), RequestContextHolder.currentRequestAttributes().getSessionId());
 		}
 
 		return "redirect:/post/" + addedReply.getPostId();

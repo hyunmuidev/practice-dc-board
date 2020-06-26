@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.fakedc.practiceboard.domain.GlobalVariables;
@@ -38,7 +39,7 @@ public class PostController {
 			@RequestParam(required = false, defaultValue = "") String keyword,
 			@RequestParam(required = false, defaultValue = GlobalVariables.DEFAULT_POST_TYPE) PostType postType,
 			Pageable page) {
-		postService.raiseViewCount(id);
+		postService.raiseViewCount(id, RequestContextHolder.currentRequestAttributes().getSessionId());
 		
 		Post post = postService.getPost(id);
 		Collection<Reply> replies = replyService.getReplies(id);
@@ -91,13 +92,13 @@ public class PostController {
 	
 	@RequestMapping(value = "/recommend", method = RequestMethod.POST)
 	public String recommend(long id) {
-		postService.recommendPost(id);
+		postService.recommendPost(id, RequestContextHolder.currentRequestAttributes().getSessionId());
 		return "redirect:/post/" + id;
 	}
 	
 	@RequestMapping(value = "/unrecommend", method = RequestMethod.POST)
 	public String unrecommend(long id) {
-		postService.unrecommendPost(id);
+		postService.unrecommendPost(id, RequestContextHolder.currentRequestAttributes().getSessionId());
 		return "redirect:/post/" + id;
 	}
 }
