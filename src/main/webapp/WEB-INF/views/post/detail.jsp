@@ -75,7 +75,7 @@
 		</div>
 		<div class="post-command row mb-3">
 			<div class="col-6">
-				<a href="/board/${ post.boardId }" class="btn btn-lg btn-primary">목록</a>
+				<a href="/board/${ post.boardId }?${ JspViewHelper.getUrlBoardFilterParams(searchBoardFilter, pageable) }" class="btn btn-lg btn-primary">목록</a>
 			</div>
 			<div class="col-6 d-flex justify-content-end">
 				<a class="btn btn-lg btn-success ml-3"

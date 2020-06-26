@@ -9,13 +9,13 @@ import lombok.Setter;
 @Getter
 @Setter
 public class SearchBoardFilter {
-	
+
 	private BoardFilterType filterType;
-	
+
 	private String keyword;
-	
+
 	private PostType postType;
-	
+
 	public SearchBoardFilter(BoardFilterType filterType, String keyword, PostType postType) {
 		this.filterType = filterType;
 		this.keyword = keyword;
@@ -25,11 +25,9 @@ public class SearchBoardFilter {
 	public BoardFilterType[] getAllBoardFilterTypes() {
 		return BoardFilterType.values();
 	}
-	
+
 	public String getUrlParams() {
-		return "filterType=" + filterType.toString() + "&keyword=" + keyword;
+		return "filterType=" + filterType.toString() + "&=" + keyword + "&postType=" + postType;
 	}
-	
-	public static int[] TYPEOF_PAGE_SIZE = {3, 10, 30, 50};
-	
+
 }

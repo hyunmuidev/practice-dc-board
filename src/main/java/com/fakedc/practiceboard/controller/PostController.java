@@ -5,14 +5,20 @@ import java.util.Collection;
 import javax.validation.constraints.NotNull;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.fakedc.practiceboard.domain.GlobalVariables;
 import com.fakedc.practiceboard.domain.Post;
 import com.fakedc.practiceboard.domain.Reply;
+import com.fakedc.practiceboard.domain.enums.BoardFilterType;
+import com.fakedc.practiceboard.domain.enums.PostType;
+import com.fakedc.practiceboard.domain.viewmodel.SearchBoardFilter;
 import com.fakedc.practiceboard.service.PostService;
 import com.fakedc.practiceboard.service.ReplyService;
 
@@ -27,12 +33,21 @@ public class PostController {
 	private ReplyService replyService;
 
 	@RequestMapping(value = "/{id}", method = RequestMethod.GET)
-	public ModelAndView detail(@PathVariable long id) {
+	public ModelAndView detail(@PathVariable long id,
+			@RequestParam(required = false, defaultValue = GlobalVariables.DEFAULT_BOARD_FILTER_TYPE) BoardFilterType filterType,
+			@RequestParam(required = false, defaultValue = "") String keyword,
+			@RequestParam(required = false, defaultValue = GlobalVariables.DEFAULT_POST_TYPE) PostType postType,
+			Pageable page) {
 		postService.raiseViewCount(id);
 		
 		Post post = postService.getPost(id);
 		Collection<Reply> replies = replyService.getReplies(id);
-		return getModelAndView("post/detail", post, replies);
+		ModelAndView mv = getModelAndView("post/detail", post, replies);
+		
+		mv.addObject("searchBoardFilter", new SearchBoardFilter(filterType, keyword, postType));
+		mv.addObject("pageable", page);
+		
+		return mv;
 	}
 
 	@RequestMapping(value = "/add", method = RequestMethod.GET)

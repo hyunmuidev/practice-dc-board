@@ -5,6 +5,8 @@ import java.time.format.DateTimeFormatter;
 
 import org.springframework.data.domain.Pageable;
 
+import com.fakedc.practiceboard.domain.viewmodel.SearchBoardFilter;
+
 public class JspViewHelper {
 
 	private JspViewHelper() {
@@ -22,4 +24,7 @@ public class JspViewHelper {
 		return String.format("currentPageIndex=%d&pagingSize=%d", currentPageIndex, pageSize);
 	}
 
+	public static String getUrlBoardFilterParams(SearchBoardFilter filter, Pageable pageable) {
+		return String.format("%s&%s", filter.getUrlParams(), getUrlPageableParams(pageable)); 
+	}
 }

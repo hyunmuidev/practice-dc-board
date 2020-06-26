@@ -1,9 +1,9 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
 <%@ page import="com.fakedc.practiceboard.utils.JspViewHelper"%>
-<%@ page
-	import="com.fakedc.practiceboard.domain.viewmodel.SearchBoardFilter"%>
-<%@ page import="com.fakedc.practiceboard.domain.enums.*" %>
+<%@ page import="com.fakedc.practiceboard.domain.GlobalVariables"%>
+<%@ page import="org.springframework.data.domain.PageRequest"%>
+<%@ page import="com.fakedc.practiceboard.domain.enums.*"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="sp" uri="http://www.springframework.org/tags"%>
 <%@ taglib prefix="sp-form"
@@ -34,10 +34,15 @@
 		<div class="card">
 			<div class="card-header">
 				<ul class="nav nav-pills card-header-pills">
-					<li class="nav-item"><a class='nav-link ${ searchBoardFilter.postType.equals(PostType.ALL) ? "active" : "" }' href="/board/${ boardId }">전체글</a>
-					</li>
-					<li class="nav-item"><a class='nav-link ${ searchBoardFilter.postType.equals(PostType.NORMAL) ? "active" : "" }' href="/board/${ boardId }?postType=NORMAL">일반</a></li>
-					<li class="nav-item"><a class='nav-link ${ searchBoardFilter.postType.equals(PostType.NOTICE) ? "active" : "" }' href="/board/${ boardId }?postType=NOTICE">공지</a></li>
+					<li class="nav-item"><a
+						class='nav-link ${ searchBoardFilter.postType.equals(PostType.ALL) ? "active" : "" }'
+						href="/board/${ boardId }">전체글</a></li>
+					<li class="nav-item"><a
+						class='nav-link ${ searchBoardFilter.postType.equals(PostType.NORMAL) ? "active" : "" }'
+						href="/board/${ boardId }?postType=NORMAL">일반</a></li>
+					<li class="nav-item"><a
+						class='nav-link ${ searchBoardFilter.postType.equals(PostType.NOTICE) ? "active" : "" }'
+						href="/board/${ boardId }?postType=NOTICE">공지</a></li>
 				</ul>
 			</div>
 			<div class="card-body">
@@ -71,7 +76,7 @@
 								class="input-group-prepend custom-select"
 								onchange="form_page_size.submit()">
 								<c:forEach var="value"
-									items="${ SearchBoardFilter.TYPEOF_PAGE_SIZE }">
+									items="${ GlobalVariables.TYPEOF_PAGE_SIZE }">
 									<option value="${ value }"
 										${ posts.size == value ? "selected" : "" }>${ value }</option>
 								</c:forEach>
@@ -102,7 +107,8 @@
 								<tr>
 									<th scope="row">${ notice.id }</th>
 									<td>${ notice.postType.getName() }</td>
-									<td class="text-left"><a href="/post/${ notice.id }">
+									<td class="text-left"><a
+										href="/post/${ notice.id }?${ JspViewHelper.getUrlBoardFilterParams(searchBoardFilter, posts.pageable) }">
 											${ notice.title } </a></td>
 									<td>${ notice.createdBy }</td>
 									<td>${ JspViewHelper.parseLocalDateTime(notice.createdDateTime, "yyyy.MM.dd") }</td>
@@ -116,7 +122,8 @@
 										<tr>
 											<th scope="row">${ post.id }</th>
 											<td>${ post.postType.getName() }</td>
-											<td class="text-left"><a href="/post/${ post.id }">
+											<td class="text-left"><a
+												href="/post/${ post.id }?${ JspViewHelper.getUrlBoardFilterParams(searchBoardFilter, posts.pageable) }">
 													${ post.title } </a></td>
 											<td>${ post.createdBy }</td>
 											<td>${ JspViewHelper.parseLocalDateTime(post.createdDateTime, "yyyy.MM.dd") }</td>
@@ -144,18 +151,24 @@
 										</c:when>
 										<c:otherwise>
 											<li class="page-item"><a class="page-link"
-												href="/board/${ boardId }?${ JspViewHelper.getUrlPageableParams(posts.previousPageable()) }&${ searchBoardFilter.urlParams }"
+												href="/board/${ boardId }?${ JspViewHelper.getUrlBoardFilterParams(searchBoardFilter, posts.previousPageable()) }"
 												aria-disabled="true">이전</a></li>
 										</c:otherwise>
 									</c:choose>
 									<c:if test="${ posts.totalPages > 0 }">
-										<c:forEach begin="0" end="${ posts.totalPages - 1 }"
+										<c:forEach begin="1" end="${ posts.totalPages }"
 											varStatus="status">
-											<li
-												class='page-item ${ posts.number == status.current ? "active" : "" }'><a
-												class="page-link"
-												href="/board/${ boardId }?${ JspViewHelper.getUrlPageableParams(status.current + 1, posts.size) }&${ searchBoardFilter.urlParams }">${ status.current + 1 }</a>
-											</li>
+											<c:choose>
+												<c:when test="${ posts.number == status.current - 1 }">
+													<li class="page-item active"><a class="page-link"
+														href="#">${ status.current }</a></li>
+												</c:when>
+												<c:otherwise>
+													<li class="page-item"><a class="page-link"
+														href="/board/${ boardId }?${ JspViewHelper.getUrlBoardFilterParams(searchBoardFilter, PageRequest.of(status.current - 1, posts.size)) }">${ status.current }</a>
+													</li>
+												</c:otherwise>
+											</c:choose>
 										</c:forEach>
 									</c:if>
 									<c:choose>
@@ -165,7 +178,7 @@
 										</c:when>
 										<c:otherwise>
 											<li class="page-item"><a class="page-link"
-												href="/board/${ boardId }?${ JspViewHelper.getUrlPageableParams(posts.nextPageable()) }&${ searchBoardFilter.urlParams }"
+												href="/board/${ boardId }?$${ JspViewHelper.getUrlBoardFilterParams(searchBoardFilter, posts.nextPageable()) }"
 												aria-disabled="true">다음</a></li>
 										</c:otherwise>
 									</c:choose>

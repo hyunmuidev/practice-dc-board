@@ -22,27 +22,29 @@ import com.fakedc.practiceboard.service.PostService;
 @Controller
 @RequestMapping("/board")
 public class BoardController {
-	
+
 	@Autowired
 	private PostService postService;
 
 	@RequestMapping(value = "/{boardId}")
 	public ModelAndView getPosts(@PathVariable String boardId,
-			@RequestParam(required = false, defaultValue = GlobalVariables.DEFAULT_BOARD_FILTER_TYPE) BoardFilterType filterType, 
-			@RequestParam(required = false, defaultValue = "") String keyword,
+			@RequestParam(required = false, defaultValue = GlobalVariables.DEFAULT_BOARD_FILTER_TYPE) BoardFilterType filterType,
+			@RequestParam(required = false, defaultValue = GlobalVariables.DEFAULT_KEYWORD) String keyword,
 			@RequestParam(required = false, defaultValue = GlobalVariables.DEFAULT_POST_TYPE) PostType postType,
 			Pageable page) {
-		
+
 		final int noticeLimit = 5;
-		SearchBoardFilter filter = new SearchBoardFilter(filterType, keyword, postType);
-		ModelAndView mv = new ModelAndView("board/posts");
-		List<Post> notices = !postType.equals(PostType.NORMAL) ? postService.getNotices(boardId, noticeLimit) : Collections.emptyList();
-		Page<Post> posts = !postType.equals(PostType.NOTICE) ? postService.getPosts(boardId, filterType, keyword, PostType.NORMAL, page) : Page.empty();
 		
+		ModelAndView mv = new ModelAndView("board/posts");
+		List<Post> notices = postType.equals(PostType.ALL) ? postService.getNotices(boardId, noticeLimit)
+				: Collections.emptyList();
+		Page<Post> posts = postService.getPosts(boardId, filterType, keyword,
+				postType.equals(PostType.NOTICE) ? PostType.NOTICE : PostType.NORMAL, page);
+
 		mv.addObject("boardId", boardId);
 		mv.addObject("notices", notices);
 		mv.addObject("posts", posts);
-		mv.addObject("searchBoardFilter", filter);
+		mv.addObject("searchBoardFilter", new SearchBoardFilter(filterType, keyword, postType));
 		return mv;
 	}
 
