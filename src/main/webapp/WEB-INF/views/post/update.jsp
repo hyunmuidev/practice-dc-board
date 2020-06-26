@@ -63,9 +63,9 @@
 					</div>
 				</div>
 				<div class="form-group row">
-					<label class="col-2 col-form-label">Password</label>
+					<label class="col-2 col-form-label">비밀번호</label>
 					<div class="col-sm-10">
-						<sp-form:input path="password" cssClass="form-control" />
+						<sp-form:password path="password" cssClass="form-control" />
 					</div>
 				</div>
 				<div class="form-group row">
