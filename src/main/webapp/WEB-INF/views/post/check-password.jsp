@@ -36,7 +36,10 @@
           <h5 class="card-title">글 비밀번호를 입력하세요</h5>
           <form method="post">
             <div>
-              <input type="password" name="password" class="form-control" required="required">
+              <input type="password" name="password" class='form-control ${ errorMessage != null ? "is-invalid" : "" }' required="required">
+              <div class="invalid-feedback">
+              	${ errorMessage }
+              </div>
             </div>
             <div class="button-area mt-3 row">
               <div class="col-lg-6 col-12 pt-3">

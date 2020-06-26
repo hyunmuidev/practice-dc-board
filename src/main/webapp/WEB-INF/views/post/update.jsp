@@ -40,7 +40,7 @@
 				<div class="form-group row">
 					<label class="col-2 col-form-label">제목</label>
 					<div class="col-sm-10">
-						<sp-form:input path="title" cssClass="form-control" />
+						<sp-form:input path="title" cssClass="form-control" required="required" />
 					</div>
 				</div>
 				<div class="form-group row">
@@ -59,19 +59,19 @@
 				<div class="form-group row">
 					<label class="col-2 col-form-label">닉네임</label>
 					<div class="col-sm-10">
-						<sp-form:input path="createdBy" cssClass="form-control" />
+						<sp-form:input path="createdBy" cssClass="form-control" required="required" />
 					</div>
 				</div>
 				<div class="form-group row">
 					<label class="col-2 col-form-label">비밀번호</label>
 					<div class="col-sm-10">
-						<sp-form:password path="password" cssClass="form-control" />
+						<sp-form:password path="password" cssClass="form-control" required="required" />
 					</div>
 				</div>
 				<div class="form-group row">
 					<label class="col-2 col-form-label">내용</label>
 					<div class="col-sm-10">
-						<sp-form:textarea path="content" rows="15" cssClass="form-control" />
+						<sp-form:textarea path="content" rows="15" cssClass="form-control" required="required" />
 					</div>
 				</div>
 				

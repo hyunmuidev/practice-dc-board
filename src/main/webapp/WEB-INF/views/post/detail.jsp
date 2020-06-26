@@ -79,7 +79,7 @@
 			</div>
 			<div class="col-6 d-flex justify-content-end">
 				<a class="btn btn-lg btn-success ml-3"
-					href="/post/check-password/${ post.id }">수정</a>
+					href="/post/update/${ post.id }">수정</a>
 				<sp-form:form action="/post/delete" method="post"
 					modelAttribute="post">
 					<button type="submit" class="btn btn-lg btn-danger ml-3">삭제</button>

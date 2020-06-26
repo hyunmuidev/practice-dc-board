@@ -1,5 +1,5 @@
 package com.fakedc.practiceboard.domain.enums;
 
 public enum PostActionType {
-	READ, RECOMMEND
+	READ, RECOMMEND, UPDATE, DELETE
 }

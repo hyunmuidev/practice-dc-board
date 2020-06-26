@@ -195,7 +195,7 @@ public class PostService {
 	 * @return
 	 */
 	public boolean checkPostHistory(String jSessionId, long postId, PostActionType postAction) {
-		PostHistory history = postHistoryRepository.findById(new PostHistoryId(jSessionId, postId, postAction)).orElseGet(() -> null);
+		PostHistory history = postHistoryRepository.findById(new PostHistoryId(jSessionId, postId, postAction)).orElse(null);
 		return history == null;
 	}
 	
