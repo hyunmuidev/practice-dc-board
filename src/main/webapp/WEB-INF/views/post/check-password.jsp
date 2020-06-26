@@ -1,5 +1,11 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
+<%@ page import="com.fakedc.practiceboard.utils.JspViewHelper"%>
+<%@ page import="com.fakedc.practiceboard.domain.enums.*"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="sp" uri="http://www.springframework.org/tags"%>
+<%@ taglib prefix="sp-form"
+	uri="http://www.springframework.org/tags/form"%>    
 <!DOCTYPE html>
 <html lang="ko">
 
@@ -28,16 +34,18 @@
         <h4 class="card-header">게시글 비밀번호 확인</h4>
         <div class="card-body">
           <h5 class="card-title">글 비밀번호를 입력하세요</h5>
-          <form>
+          <form method="post">
             <div>
-              <input type="password" class="form-control">
+              <input type="password" name="password" class="form-control" required="required">
             </div>
             <div class="button-area mt-3 row">
               <div class="col-lg-6 col-12 pt-3">
-                <button class="btn btn-lg btn-block btn-primary">확인</button>
+                <button type="submit" class="btn btn-lg btn-block btn-primary">확인</button>
               </div>
               <div class="col-lg-6 col-12 pt-3">
-                <button class="btn btn-lg btn-block btn-secondary">뒤로가기</button>
+              	<a class="btn btn-lg btn-block btn-secondary" href="/post/${ postId }">
+              		뒤로가기
+              	</a>
               </div>
             </div>
           </form>

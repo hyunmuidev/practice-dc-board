@@ -7,7 +7,9 @@ import javax.validation.constraints.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -100,5 +102,18 @@ public class PostController {
 	public String unrecommend(long id) {
 		postService.unrecommendPost(id, RequestContextHolder.currentRequestAttributes().getSessionId());
 		return "redirect:/post/" + id;
+	}
+	
+	@GetMapping(value = "/check-password/{id}")
+	public ModelAndView checkPassoword(@PathVariable long id) {
+		ModelAndView mv = new ModelAndView("post/check-password");
+		mv.addObject("postId", id);
+		return mv;
+	}
+	
+	@PostMapping(value = "/check-password/{id}")
+	public String checkPasswordPost(@PathVariable long id, String password) {
+		boolean result = postService.checkPassword(id, password);
+		return result ? "redirect:/post/update/" + id : "post/check-password";
 	}
 }

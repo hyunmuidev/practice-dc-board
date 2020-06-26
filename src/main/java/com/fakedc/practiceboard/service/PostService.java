@@ -210,4 +210,15 @@ public class PostService {
 		PostHistory history = new PostHistory(jSessionId, postId, postAction);
 		postHistoryRepository.save(history);
 	}
+
+	/**
+	 * 게시글의 비밀번호를 확인한다.
+	 * 
+	 * @param id
+	 * @param password
+	 * @return
+	 */
+	public boolean checkPassword(long id, String password) {
+		return getPost(id).getPassword().equals(password);
+	}
 }

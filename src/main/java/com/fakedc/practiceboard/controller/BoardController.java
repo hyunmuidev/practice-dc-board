@@ -45,6 +45,7 @@ public class BoardController {
 		mv.addObject("notices", notices);
 		mv.addObject("posts", posts);
 		mv.addObject("searchBoardFilter", new SearchBoardFilter(filterType, keyword, postType));
+		
 		return mv;
 	}
 
